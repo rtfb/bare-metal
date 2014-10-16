@@ -1,6 +1,7 @@
 # Makefile - build script */
 
 # build environment
+BUILDDIR := build
 PREFIX ?= /usr
 ARMGNU ?= $(PREFIX)/bin/arm-none-eabi
 
@@ -9,8 +10,9 @@ SOURCES_ASM := $(wildcard *.S)
 SOURCES_C   := $(wildcard *.c)
 
 # object files
-OBJS        := $(patsubst %.S,%.o,$(SOURCES_ASM))
-OBJS        += $(patsubst %.c,%.o,$(SOURCES_C))
+OBJ_FILES   := $(patsubst %.S,%.o,$(SOURCES_ASM))
+OBJ_FILES   += $(patsubst %.c,%.o,$(SOURCES_C))
+OBJS        := $(addprefix $(BUILDDIR)/, $(OBJ_FILES))
 
 # Build flags
 DEPENDFLAGS := -MD -MP
@@ -35,26 +37,27 @@ CFLAGS      := $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CFLAGS      += -std=gnu99
 
 # build rules
-all: kernel.img
+all: $(BUILDDIR)/kernel.img
 
-include $(wildcard *.d)
+include $(wildcard $(BUILDDIR)/*.d)
 
-kernel.elf: $(OBJS) link-arm-eabi.ld
+$(BUILDDIR)/kernel.elf: $(OBJS) link-arm-eabi.ld
 	$(ARMGNU)-ld $(OBJS) -Tlink-arm-eabi.ld -o $@
 
-kernel.img: kernel.elf
-	$(ARMGNU)-objcopy kernel.elf -O binary kernel.img
+$(BUILDDIR)/kernel.img: $(BUILDDIR)/kernel.elf
+	$(ARMGNU)-objcopy $(BUILDDIR)/kernel.elf -O binary $(BUILDDIR)/kernel.img
 
 clean:
-	$(RM) -f $(OBJS) kernel.elf kernel.img
+	$(RM) -f $(OBJS) $(BUILDDIR)/kernel.elf $(BUILDDIR)/kernel.img
 
 distclean: clean
-	$(RM) -f *.d
+	$(RM) -f $(BUILDDIR)/*.d
 
 # C.
-%.o: %.c Makefile
+$(BUILDDIR)/%.o: %.c Makefile
 	$(ARMGNU)-gcc $(CFLAGS) -c $< -o $@
 
 # AS.
-%.o: %.S Makefile
+$(BUILDDIR)/%.o: %.S Makefile
+	@mkdir -p $(BUILDDIR)
 	$(ARMGNU)-gcc $(ASFLAGS) -c $< -o $@
