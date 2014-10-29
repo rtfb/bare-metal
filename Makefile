@@ -48,7 +48,7 @@ $(BUILDDIR)/kernel.img: $(BUILDDIR)/kernel.elf
 	$(ARMGNU)-objcopy $(BUILDDIR)/kernel.elf -O binary $(BUILDDIR)/kernel.img
 
 clean:
-	$(RM) -f $(OBJS) $(BUILDDIR)/kernel.elf $(BUILDDIR)/kernel.img
+	$(RM) -r $(BUILDDIR)
 
 distclean: clean
 	$(RM) -f $(BUILDDIR)/*.d
