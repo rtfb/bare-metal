@@ -37,7 +37,7 @@ CFLAGS      := $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CFLAGS      += -std=gnu99
 
 # build rules
-all: $(BUILDDIR)/kernel.img
+all: $(BUILDDIR)/kernel.img $(BUILDDIR)/kernel.list
 
 include $(wildcard $(BUILDDIR)/*.d)
 
@@ -46,6 +46,9 @@ $(BUILDDIR)/kernel.elf: $(OBJS) link-arm-eabi.ld
 
 $(BUILDDIR)/kernel.img: $(BUILDDIR)/kernel.elf
 	$(ARMGNU)-objcopy $(BUILDDIR)/kernel.elf -O binary $(BUILDDIR)/kernel.img
+
+$(BUILDDIR)/kernel.list: $(BUILDDIR)/kernel.elf
+	$(ARMGNU)-objdump -d $(BUILDDIR)/kernel.elf > $(BUILDDIR)/kernel.list
 
 clean:
 	$(RM) -r $(BUILDDIR)
