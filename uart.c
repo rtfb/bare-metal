@@ -88,7 +88,7 @@ void uart_init() {
     mmio_write(UART0_IBRD, 1);
     mmio_write(UART0_FBRD, 40);
 
-    // Enable FIFO & 8 bit data transmissio (1 stop bit, no parity).
+    // Enable FIFO & 8 bit data transmission (1 stop bit, no parity).
     mmio_write(UART0_LCRH, (1 << 4) | (1 << 5) | (1 << 6));
 
     // Mask all interrupts.
@@ -112,6 +112,22 @@ void uart_putc(uint8_t byte) {
     }
     }
     mmio_write(UART0_DR, byte);
+}
+
+/*
+ * Receive a byte via UART0.
+ *
+ * Returns:
+ * uint8_t: byte received.
+ */
+uint8_t uart_getc() {
+    // wait for UART to have received something
+    while (1) {
+        if (!(mmio_read(UART0_FR) & (1 << 4))) {
+            break;
+        }
+    }
+    return mmio_read(UART0_DR);
 }
 
 /*

@@ -17,6 +17,14 @@ void uart_init();
 void uart_putc(uint8_t byte);
 
 /*
+ * Receive a byte via UART0.
+ *
+ * Returns:
+ * uint8_t: byte received.
+ */
+uint8_t uart_getc();
+
+/*
  * print a string to the UART one character at a time
  * const char *str: 0-terminated string
  */
