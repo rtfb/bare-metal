@@ -5,6 +5,7 @@
  */
 
 #include <stdint.h>
+#include <stddef.h>
 #include <mmio.h>
 #include <uart.h>
 
@@ -138,4 +139,34 @@ void uart_puts(const char *str) {
     while (*str) {
         uart_putc(*str++);
     }
+}
+
+/*
+ * Get a string of characters from the UART one character at a time until '\r'
+ * is received. Echo each character to UART.
+ *
+ * Writes the string to buff, including the '\r', with terminating zero at the
+ * end. Returns 0 on success, negative error code on failure. If error was
+ * returned, the content of *buff is undefined.
+ */
+int uart_getln(char *buff, uint32_t len) {
+    if (buff == NULL || len == 0) {
+        return EPARAM;
+    }
+    uint32_t count = 0;
+    char ch = 0;
+    while (count < len) {
+        ch = uart_getc();
+        uart_putc(ch);
+        buff[count] = ch;
+        ++count;
+        if (ch == '\r') {
+            break;
+        }
+    }
+    if (count >= len) {
+        return ENOMEM;
+    }
+    buff[count] = '\0';
+    return 0;
 }
