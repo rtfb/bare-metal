@@ -1,4 +1,5 @@
 #!/bin/sh
 QEMU_BIN=../qemu-rpi-build/build/bin/qemu-system-arm
 KERNEL_IMG=./build/kernel.elf
-$QEMU_BIN -kernel $KERNEL_IMG -cpu arm1176 -m 256 -M raspi -serial stdio
+ADDR=tcp:localhost:4444,server
+$QEMU_BIN -kernel $KERNEL_IMG -cpu arm1176 -m 256 -M raspi -serial $ADDR
