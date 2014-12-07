@@ -4,21 +4,23 @@
 
 #include <uart.h>
 #include <timer.h>
+#include "b64.h"
 
 #define UNUSED(x) (void)(x)
 
-const char hello[] = "\r\nHello World\r\n";
-const char _1[] = "\r\n1\r\n";
-const char _2[] = "\r\n2\r\n";
-const char _3[] = "\r\n3\r\n";
 const char halting[] = "\r\n*** system halting ***";
 const char newline[] = "\r\n";
+const char ready[] = "ready\r\n";
+const char yoo[] = "yoo!";
 
 // kernel main function, it all begins here
 void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     char buff[256];
     uint32_t len = 256;
+    char decodebuff[256];
+    uint32_t decodebufflen = ARR_LEN(decodebuff);
     int status = 0;
+    int strlen = 0;
     UNUSED(r0);
     UNUSED(r1);
     UNUSED(atags);
@@ -28,19 +30,31 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     // Wait a bit
     Wait(1000000);
 
-    uart_puts(hello);
-
-    Wait(1000000);
-    uart_puts(_1);
-    Wait(1000000);
-    uart_puts(_2);
-    Wait(1000000);
-    uart_puts(_3);
+    uart_puts(ready);
 
     while (1) {
         status = uart_getln(buff, len);
         if (status == 0) {
-            uart_puts(buff);
+            uart_puts(newline);
+            if ((buff[0] == 'b') && (buff[1] == '6') && (buff[2] == '4')) {
+                /*int bytes_decoded =*/ b64_decode(buff+4, decodebuff, decodebufflen);
+                uart_puts(decodebuff);
+            } else if ((buff[0] == 'i') && (buff[1] == 'c') & (buff[2] == 'k') && (buff[3] == 'y')) {
+                uart_puts(yoo);
+            } else {
+                for (strlen = 0; buff[strlen] != 0; ++strlen);
+                --strlen;
+                int j = 0;
+                for (; strlen != -1; --strlen, ++j) {
+                    decodebuff[j] = buff[strlen];
+                }
+                decodebuff[j+1] = 0;
+                uart_puts(decodebuff);
+                for (strlen = 0; decodebuff[strlen] != '\0'; ++strlen) {
+                    decodebuff[strlen] = '\0';
+                }
+                //uart_puts(buff);
+            }
         }
         uart_puts(newline);
     }
