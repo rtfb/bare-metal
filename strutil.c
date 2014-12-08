@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 int str_startswith(char const* str, char const* prefix) {
     if (!str || !prefix) {
@@ -14,4 +15,16 @@ int str_startswith(char const* str, char const* prefix) {
         return 0;
     }
     return 1;
+}
+
+uint32_t str_len(char const* str) {
+    if (!str) {
+        return 0;
+    }
+    uint32_t strlen = 0;
+    while (*str != 0) {
+        ++str;
+        ++strlen;
+    }
+    return strlen;
 }

@@ -21,7 +21,6 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     char decodebuff[256];
     uint32_t decodebufflen = ARR_LEN(decodebuff);
     int status = 0;
-    int strlen = 0;
     UNUSED(r0);
     UNUSED(r1);
     UNUSED(atags);
@@ -43,8 +42,7 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
             } else if (str_startswith(buff, "icky")) {
                 uart_puts(yoo);
             } else {
-                for (strlen = 0; buff[strlen] != 0; ++strlen);
-                --strlen;
+                int strlen = str_len(buff) - 1;
                 int j = 0;
                 for (; strlen != -1; --strlen, ++j) {
                     decodebuff[j] = buff[strlen];
