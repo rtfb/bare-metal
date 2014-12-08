@@ -5,6 +5,7 @@
 #include <uart.h>
 #include <timer.h>
 #include "b64.h"
+#include "strutil.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -36,10 +37,10 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
         status = uart_getln(buff, len);
         if (status == 0) {
             uart_puts(newline);
-            if ((buff[0] == 'b') && (buff[1] == '6') && (buff[2] == '4')) {
+            if (str_startswith(buff, "b64 ")) {
                 /*int bytes_decoded =*/ b64_decode(buff+4, decodebuff, decodebufflen);
                 uart_puts(decodebuff);
-            } else if ((buff[0] == 'i') && (buff[1] == 'c') & (buff[2] == 'k') && (buff[3] == 'y')) {
+            } else if (str_startswith(buff, "icky")) {
                 uart_puts(yoo);
             } else {
                 for (strlen = 0; buff[strlen] != 0; ++strlen);
