@@ -17,7 +17,7 @@ const char yoo[] = "yoo!";
 // kernel main function, it all begins here
 void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     char buff[256];
-    uint32_t len = 256;
+    uint32_t len = ARR_LEN(buff);
     char decodebuff[256];
     uint32_t decodebufflen = ARR_LEN(decodebuff);
     int status = 0;
@@ -49,7 +49,6 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
                 }
                 decodebuff[j] = 0;
                 uart_puts(decodebuff);
-                //uart_puts(buff);
             }
         }
         uart_puts(newline);
