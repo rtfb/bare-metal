@@ -47,11 +47,8 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
                 for (; strlen != -1; --strlen, ++j) {
                     decodebuff[j] = buff[strlen];
                 }
-                decodebuff[j+1] = 0;
+                decodebuff[j] = 0;
                 uart_puts(decodebuff);
-                for (strlen = 0; decodebuff[strlen] != '\0'; ++strlen) {
-                    decodebuff[strlen] = '\0';
-                }
                 //uart_puts(buff);
             }
         }
