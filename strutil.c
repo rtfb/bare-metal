@@ -21,10 +21,9 @@ uint32_t str_len(char const* str) {
     if (!str) {
         return 0;
     }
-    uint32_t strlen = 0;
-    while (*str != 0) {
-        ++str;
-        ++strlen;
+    char const* p = str;
+    while (*p != 0) {
+        ++p;
     }
-    return strlen;
+    return p - str;
 }
