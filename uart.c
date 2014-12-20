@@ -109,8 +109,8 @@ void uart_putc(uint8_t byte) {
     // wait for UART to become ready to transmit
     while (1) {
         if (!(mmio_read(UART0_FR) & (1 << 5))) {
-        break;
-    }
+            break;
+        }
     }
     mmio_write(UART0_DR, byte);
 }
