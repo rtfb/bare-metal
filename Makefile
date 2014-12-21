@@ -1,9 +1,15 @@
-# Makefile - build script */
 
 # build environment
 BUILDDIR := build
 PREFIX ?= /usr
 ARMGNU ?= $(PREFIX)/bin/arm-none-eabi
+
+# Emulator stuff
+QEMU_BIN=../qemu-rpi-build/build/bin/qemu-system-arm
+KERNEL_ELF=$(BUILDDIR)/kernel.elf
+QEMU_MACHINE_FLAGS=-cpu arm1176 -m 256 -M raspi
+#QEMU_ADDR=tcp:localhost:4444,server
+QEMU_ADDR=stdio
 
 # source files
 SOURCES_ASM := $(wildcard *.S)
@@ -56,6 +62,9 @@ clean:
 distclean: clean
 	$(RM) -f $(BUILDDIR)/*.d
 
+run: all
+	$(QEMU_BIN) -kernel $(KERNEL_ELF) $(QEMU_MACHINE_FLAGS) -serial $(QEMU_ADDR)
+
 # C.
 $(BUILDDIR)/%.o: %.c Makefile
 	$(ARMGNU)-gcc $(CFLAGS) -c $< -o $@
@@ -64,3 +73,5 @@ $(BUILDDIR)/%.o: %.c Makefile
 $(BUILDDIR)/%.o: %.S Makefile
 	@mkdir -p $(BUILDDIR)
 	$(ARMGNU)-gcc $(ASFLAGS) -c $< -o $@
+
+.PHONY: all clean distclean run
