@@ -40,16 +40,37 @@ void putint(int i) {
 }
 
 void puthexrun(uint8_t* ptr, int len) {
+    uint8_t* ptr2 = ptr;
     int num = MIN(len, 8);
     for (int i = 0; i < num; ++i) {
         putint(*ptr++);
     }
+    for (int i = num; i < 8; ++i) {
+        uart_puts("   ");
+    }
+    uart_putc(' ');
     if (len > 8) {
-        uart_putc(' ');
         num = MIN(len - 8, 8);
         for (int i = 0; i < num; ++i) {
             putint(*ptr++);
         }
+        for (int i = num; i < 8; ++i) {
+            uart_puts("   ");
+        }
+    } else {
+        for (int i = 0; i < 8; ++i) {
+            uart_puts("   ");
+        }
+    }
+    uart_puts(" | ");
+    num = MIN(len, 16);
+    for (int i = 0; i < num; ++i) {
+        if (*ptr2 > 31 && *ptr2 < 128) {
+            uart_putc(*ptr2);
+        } else {
+            uart_putc('.');
+        }
+        ++ptr2;
     }
 }
 
