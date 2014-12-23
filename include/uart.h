@@ -8,6 +8,8 @@
 #define EPARAM -1
 #define ENOMEM -2
 
+extern const char uart_newline[];
+
 /*
  * Initialize UART0.
  */

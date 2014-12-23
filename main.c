@@ -6,88 +6,13 @@
 #include <timer.h>
 #include "b64.h"
 #include "strutil.h"
+#include "debug.h"
 
 #define UNUSED(x) (void)(x)
-#define MIN(x,y) (((x) < (y)) ? (x) : (y))
 
 const char halting[] = "\r\n*** system halting ***";
-const char newline[] = "\r\n";
 const char ready[] = "ready\r\n";
 const char yoo[] = "yoo!";
-
-char* hexbyte(uint8_t b, char *buff) {
-    char const* hex = "0123456789abcdef";
-    *buff = hex[b >> 4];
-    ++buff;
-    *buff = hex[b & 0x0f];
-    ++buff;
-    *buff = '\0';
-    return buff - 2;
-}
-
-void puthexint(uint32_t i) {
-    char buff[32];
-    uart_puts(hexbyte(i >> 24, buff));
-    uart_puts(hexbyte((i & 0x00ff0000) >> 16, buff));
-    uart_puts(hexbyte((i & 0x0000ff00) >> 8, buff));
-    uart_puts(hexbyte(i & 0x000000ff, buff));
-}
-
-void putint(int i) {
-    char buff[32];
-    uart_puts(hexbyte(i, buff));
-    uart_putc(' ');
-}
-
-void puthexrun(uint8_t* ptr, int len) {
-    uint8_t* ptr2 = ptr;
-    int num = MIN(len, 8);
-    for (int i = 0; i < num; ++i) {
-        putint(*ptr++);
-    }
-    for (int i = num; i < 8; ++i) {
-        uart_puts("   ");
-    }
-    uart_putc(' ');
-    if (len > 8) {
-        num = MIN(len - 8, 8);
-        for (int i = 0; i < num; ++i) {
-            putint(*ptr++);
-        }
-        for (int i = num; i < 8; ++i) {
-            uart_puts("   ");
-        }
-    } else {
-        for (int i = 0; i < 8; ++i) {
-            uart_puts("   ");
-        }
-    }
-    uart_puts(" | ");
-    num = MIN(len, 16);
-    for (int i = 0; i < num; ++i) {
-        if (*ptr2 > 31 && *ptr2 < 128) {
-            uart_putc(*ptr2);
-        } else {
-            uart_putc('.');
-        }
-        ++ptr2;
-    }
-}
-
-void inspect_memory(char const* straddr) {
-    int addr = str_parse_int(straddr);
-    uint8_t *ptr = (uint8_t*) addr;
-    int num = 37;
-    while (num > 0) {
-        puthexint(addr);
-        uart_puts(": ");
-        puthexrun(ptr, MIN(num, 16));
-        uart_puts(newline);
-        addr += 16;
-        ptr += 16;
-        num -= 16;
-    }
-}
 
 // kernel main function, it all begins here
 void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
@@ -110,7 +35,7 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     while (1) {
         status = uart_getln(buff, len);
         if (status == 0) {
-            uart_puts(newline);
+            uart_puts(uart_newline);
             if (str_startswith(buff, "b64 ")) {
                 /*int bytes_decoded =*/ b64_decode(buff+4, decodebuff, decodebufflen);
                 uart_puts(decodebuff);
@@ -128,7 +53,7 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
                 uart_puts(decodebuff);
             }
         }
-        uart_puts(newline);
+        uart_puts(uart_newline);
     }
 
     // Wait a bit

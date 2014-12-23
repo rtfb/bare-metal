@@ -9,6 +9,8 @@
 #include <mmio.h>
 #include <uart.h>
 
+const char uart_newline[] = "\r\n";
+
 enum {
     // The GPIO registers base address.
     GPIO_BASE = 0x20200000,
