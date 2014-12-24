@@ -3,9 +3,49 @@
 #include <stdint.h>
 
 #include "uart.h"
-#include "strutil.h"
 
 #define MIN(x,y) (((x) < (y)) ? (x) : (y))
+
+int dbg_parse_hex(char const* str) {
+    while (*str && *str == '0') {
+        ++str;
+    }
+    if (*str && (*str == 'x' || *str == 'X')) {
+        ++str;
+    }
+    char const* start = str;
+    while (*str && ((*str >= '0' && *str <= '9') ||
+                    (*str >= 'a' && *str <= 'f') ||
+                    (*str >= 'A' && *str <= 'F'))) {
+        ++str;
+    }
+    if (str - start > 8) {
+        return -1;
+    }
+    if (str - start == 0) {
+        return -2;
+    }
+    --str;
+    --start;
+    int result = 0;
+    int iter = 0;
+    while (str != start) {
+        int nibble = 0;
+        if (*str >= '0' && *str <= '9') {
+            nibble = *str - '0';
+        } else if (*str >= 'a' && *str <= 'f') {
+            nibble = *str - 'a' + 10;
+        } else if (*str >= 'A' && *str <= 'F') {
+            nibble = *str - 'A' + 10;
+        } else {
+            return -3; // Should never get here
+        }
+        result |= nibble << (iter * 4);
+        ++iter;
+        --str;
+    }
+    return result;
+}
 
 char* hexbyte(uint8_t b, char *buff) {
     char const* hex = "0123456789abcdef";
@@ -67,7 +107,7 @@ void puthexrun(uint8_t* ptr, int len) {
 }
 
 void inspect_memory(char const* straddr) {
-    int addr = str_parse_int(straddr);
+    int addr = dbg_parse_hex(straddr);
     uint8_t *ptr = (uint8_t*) addr;
     int num = 37;
     while (num > 0) {
