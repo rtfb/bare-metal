@@ -25,10 +25,10 @@ void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
 
 // kernel main function, it all begins here
 void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
-    char buff[256];
-    uint32_t len = ARR_LEN(buff);
-    char decodebuff[256];
-    uint32_t decodebufflen = ARR_LEN(decodebuff);
+    char *buff = (char*) 0x10000;
+    uint32_t len = 0x20000 - 0x10000;
+    char *decodebuff = (char*) 0x20000;
+    uint32_t decodebufflen = 0x30000 - 0x20000;
     int status = 0;
     UNUSED(r0);
     UNUSED(r1);
@@ -46,8 +46,17 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
         if (status == 0) {
             uart_puts(uart_newline);
             if (str_startswith(buff, "b64 ")) {
-                /*int bytes_decoded =*/ b64_decode(buff+4, decodebuff, decodebufflen);
-                uart_puts(decodebuff);
+                uint32_t bytes_decoded = b64_decode(buff+4, decodebuff, decodebufflen);
+                uart_puts("base64 decoded #bytes: ");
+                char tmp[32];
+                uint32_t tmplen = ARR_LEN(tmp);
+                uart_puts(str_int_to_str(bytes_decoded, tmp, tmplen));
+                uart_puts(uart_newline);
+                // Copy the code of bootstrap_decoded_binary somewhere safe.
+                uint32_t func_len = 64; // wild guess
+                mem_cpy((uint32_t)bootstrap_decoded_binary, 0x30000, func_len);
+                // Call bootstrap_decoded_binary from that safe location
+                BRANCHTO(0x30000);
             } else if (str_startswith(buff, "m ")) {
                 inspect_memory(buff+2);
             } else if (str_startswith(buff, "icky")) {
