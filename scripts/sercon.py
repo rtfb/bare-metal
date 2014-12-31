@@ -14,7 +14,7 @@ def main():
         #print('(%s) %d' % (cmd, len(cmd)))
         if cmd == 'quit':
             break
-        nbytes = conn.write(cmd + '\r\n')
+        nbytes = conn.write(cmd + '\r')
         conn.flush()
         sleep(0.05) # sleep for 50 millis, give the other end time to respond
         data = conn.read(conn.inWaiting())
