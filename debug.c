@@ -1,8 +1,7 @@
 /* debug.c - various debugging helpers */
 
-#include <stdint.h>
-
 #include "uart.h"
+#include "common.h"
 
 #define MIN(x,y) (((x) < (y)) ? (x) : (y))
 

@@ -4,10 +4,9 @@
  * Chapter 13: UART
  */
 
-#include <stdint.h>
-#include <stddef.h>
 #include <mmio.h>
 #include <uart.h>
+#include "common.h"
 
 const char uart_newline[] = "\r\n";
 

@@ -1,13 +1,12 @@
 /* main.c - the entry point for the kernel */
 
-#include <stdint.h>
-
 #include <uart.h>
 #include <timer.h>
 #include "b64.h"
 #include "strutil.h"
 #include "debug.h"
 #include "asmcall.h"
+#include "common.h"
 
 #define UNUSED(x) (void)(x)
 

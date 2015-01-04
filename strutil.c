@@ -1,5 +1,4 @@
-#include <stdint.h>
-#include <stdbool.h>
+#include "common.h"
 
 int str_startswith(char const* str, char const* prefix) {
     if (!str || !prefix) {

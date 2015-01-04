@@ -1,4 +1,5 @@
 #include "b64.h"
+#include "common.h"
 
 int decode_one(char c) {
     if (c >= 'A' && c <= 'Z') {
