@@ -35,7 +35,7 @@ Start:
     blo 1b
 
     // Call kernel_main
-    ldr r3, =kernel_main
+    ldr r3, =init_irq
     blx r3
 
     // halt

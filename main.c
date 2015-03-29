@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "asmcall.h"
 #include "common.h"
+#include "mmio.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -20,6 +21,63 @@ void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
     for (int i = 0; i < len; ++i) {
         *p_to++ = *p_from++;
     }
+}
+
+extern void enable_irq ( void );
+
+
+#define ARM_TIMER_LOD 0x2000B400
+#define ARM_TIMER_VAL 0x2000B404
+#define ARM_TIMER_CTL 0x2000B408
+#define ARM_TIMER_CLI 0x2000B40C
+#define ARM_TIMER_RIS 0x2000B410
+#define ARM_TIMER_MIS 0x2000B414
+#define ARM_TIMER_RLD 0x2000B418
+#define ARM_TIMER_DIV 0x2000B41C
+#define ARM_TIMER_CNT 0x2000B420
+
+#define SYSTIMERCLO 0x20003004
+#define GPFSEL1 0x20200004
+#define GPSET0  0x2020001C
+#define GPCLR0  0x20200028
+
+#define IRQ_BASIC 0x2000B200
+#define IRQ_PEND1 0x2000B204
+#define IRQ_PEND2 0x2000B208
+#define IRQ_FIQ_CONTROL 0x2000B210
+#define IRQ_ENABLE_BASIC 0x2000B218
+#define IRQ_DISABLE_BASIC 0x2000B224
+
+volatile unsigned int icount;
+
+//-------------------------------------------------------------------------
+void __attribute__((interrupt("IRQ"))) c_irq_handler (void) {
+    mmio_write(ARM_TIMER_CLI, 1);
+    icount++;
+    if (icount & 1) {
+        mmio_write(GPCLR0, 1 << 16);
+        uart_puts("LED OFF");
+        uart_puts(uart_newline);
+    } else {
+        mmio_write(GPSET0, 1 << 16);
+        uart_puts("LED ON");
+        uart_puts(uart_newline);
+    }
+    //mmio_write(ARM_TIMER_CLI,0);
+}
+
+void setup_timer() {
+    uart_puts("1");
+    mmio_write(GPFSEL1, 1 << 18);
+    uart_puts("2");
+    mmio_write(IRQ_ENABLE_BASIC, 1 << 0);
+    uart_puts("3");
+    mmio_write(ARM_TIMER_LOD, 0x400);
+    uart_puts("4");
+    mmio_write(ARM_TIMER_CTL, (1 << 1) | (1 << 7) | (1 << 5) | (2 << 2));
+    uart_puts("5");
+    enable_irq();
+    uart_puts("6");
 }
 
 // kernel main function, it all begins here
@@ -39,6 +97,8 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     Wait(1000000);
 
     uart_puts(ready);
+
+    setup_timer();
 
     while (1) {
         status = uart_getln(buff, len);
