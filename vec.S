@@ -77,9 +77,7 @@ reset:
     // We enter execution in supervisor mode. For more information on
     // processor modes see ARM Section A2.2 (Processor Modes)
 
-    //mov     r0, #0x8000
-    mov     r0, #0x8000
-    add     r0, #0xc8
+    ldr     r0, =init_irq
     mov     r1, #0x0000
     ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
     stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}

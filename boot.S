@@ -34,7 +34,9 @@ Start:
     cmp r4, r9
     blo 1b
 
-    // Call kernel_main
+    // Call kernel_main, indirectly. First, call init_irq, which will install
+    // IRQ vectors, including one for reset. The reset handler will get called,
+    // finish up installing IRQs and will call kernel_main.
     ldr r3, =init_irq
     blx r3
 
