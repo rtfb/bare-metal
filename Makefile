@@ -5,7 +5,7 @@ PREFIX ?= /usr
 ARMGNU ?= $(PREFIX)/bin/arm-none-eabi
 
 # Emulator stuff
-QEMU_BIN=../qemu-rpi-build/build/bin/qemu-system-arm
+QEMU_BIN=./qemu/build/arm-softmmu/bin/qemu-system-arm
 KERNEL_ELF=$(BUILDDIR)/kernel.elf
 QEMU_MACHINE_FLAGS=-cpu arm1176 -m 256 -M raspi
 #QEMU_ADDR=tcp:localhost:4444,server
