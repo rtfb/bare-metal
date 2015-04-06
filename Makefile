@@ -42,6 +42,9 @@ ASFLAGS     := $(INCLUDES) $(DEPENDFLAGS) -D__ASSEMBLY__
 CFLAGS      := $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CFLAGS      += -std=gnu99
 
+ARCHFLAGS_RPI_1 := -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s
+ARCHFLAGS_RPI_2 := -mfpu=vfp -mfloat-abi=hard -march=armv7-a -mtune=cortex-a7
+
 # build rules
 all: $(BUILDDIR)/kernel.img $(BUILDDIR)/kernel.list
 
@@ -62,6 +65,7 @@ clean:
 distclean: clean
 	$(RM) -f $(BUILDDIR)/*.d
 
+run: CFLAGS += $(ARCHFLAGS_RPI_1)
 run: all
 	$(QEMU_BIN) -kernel $(KERNEL_ELF) $(QEMU_MACHINE_FLAGS) -serial $(QEMU_ADDR)
 
