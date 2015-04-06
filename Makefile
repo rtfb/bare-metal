@@ -45,6 +45,9 @@ CFLAGS      += -std=gnu99
 ARCHFLAGS_RPI_1 := -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s
 ARCHFLAGS_RPI_2 := -mfpu=vfp -mfloat-abi=hard -march=armv7-a -mtune=cortex-a7
 
+image: CFLAGS += -DRPI_BPLUS
+image: clean all
+
 # build rules
 all: $(BUILDDIR)/kernel.img $(BUILDDIR)/kernel.list
 
