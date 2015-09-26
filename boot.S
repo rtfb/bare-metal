@@ -37,7 +37,7 @@ Start:
     // Call kernel_main, indirectly. First, call init_irq, which will install
     // IRQ vectors, including one for reset. The reset handler will get called,
     // finish up installing IRQs and will call kernel_main.
-    ldr r3, =init_irq
+    ldr r3, =irq_vectors
     blx r3
 
     // halt
