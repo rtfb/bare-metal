@@ -79,10 +79,10 @@ reset_handler:
 
     ldr     r0, =irq_vectors
     mov     r1, #0x0000
-    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
-    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}
-    ldmia   r0!,{r2, r3, r4, r5, r6, r7, r8, r9}
-    stmia   r1!,{r2, r3, r4, r5, r6, r7, r8, r9}
+    ldmia   r0!, {r2-r9}
+    stmia   r1!, {r2-r9}
+    ldmia   r0!, {r2-r9}
+    stmia   r1!, {r2-r9}
 
     // We're going to use interrupt mode, so setup the interrupt mode
     // stack pointer which differs to the application stack pointer:
