@@ -10,6 +10,7 @@
 #include "mmio.h"
 #include "led.h"
 #include "arm-timer.h"
+#include "irq.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -26,14 +27,6 @@ void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
 }
 
 extern void enable_irq ( void );
-
-#define IRQ_BASIC 0x2000B200
-#define IRQ_PEND1 0x2000B204
-#define IRQ_PEND2 0x2000B208
-#define IRQ_FIQ_CONTROL 0x2000B20C
-#define IRQ_ENABLE_1 0x2000B210
-#define IRQ_ENABLE_BASIC 0x2000B218
-#define IRQ_DISABLE_BASIC 0x2000B224
 
 volatile unsigned int icount;
 volatile unsigned int* gpio = (unsigned int*)GPIO_BASE;
@@ -54,7 +47,7 @@ void setup_timer() {
     uart_puts("1");
     gpio[LED_GPFSEL] |= (1 << LED_GPFBIT);
     uart_puts("2");
-    mmio_write(IRQ_ENABLE_BASIC, 1 << 0);
+    irq_controller()->enable_basic_irqs = IRQ_BASIC_ARM_TIMER;
     uart_puts("3");
     arm_timer()->load = 0x400;
     uart_puts("4");
