@@ -61,6 +61,11 @@ reset_handler:
 reset_handler:
     // We enter execution in supervisor mode. For more information on
     // processor modes see ARM Section A2.2 (Processor Modes)
+    // CPSID: CPS=Change Processor State, ID=interrupt disable
+    // if: i=IRQ interrupts, f=FIQ interrupts
+    // #CPSR_MODE_SYSTEM: switch to SYS mode
+    cpsid if, #CPSR_MODE_SYSTEM
+
     // Install interrupt vectors. Copy 16 words from 0x8000, where they are
     // stored in our binary, to 0x0000 where ARM calls them
     mov     r0, #0x8000
