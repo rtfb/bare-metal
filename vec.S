@@ -1,8 +1,12 @@
 
 #include <arm.h>
 
-.globl irq_vectors
-irq_vectors:
+// To keep this in the first portion of the binary.
+.section ".text.boot"
+
+// Make Start global.
+.globl Start
+Start:
     ldr pc, reset_addr
     ldr pc, undefined_addr
     ldr pc, swi_addr
@@ -57,8 +61,9 @@ reset_handler:
 reset_handler:
     // We enter execution in supervisor mode. For more information on
     // processor modes see ARM Section A2.2 (Processor Modes)
-
-    ldr     r0, =irq_vectors
+    // Install interrupt vectors. Copy 16 words from 0x8000, where they are
+    // stored in our binary, to 0x0000 where ARM calls them
+    mov     r0, #0x8000
     mov     r1, #0x0000
     ldmia   r0!, {r2-r9}
     stmia   r1!, {r2-r9}
