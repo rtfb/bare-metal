@@ -9,6 +9,7 @@
 #include "common.h"
 #include "mmio.h"
 #include "led.h"
+#include "arm-timer.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -26,17 +27,6 @@ void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
 
 extern void enable_irq ( void );
 
-
-#define ARM_TIMER_LOD 0x2000B400
-#define ARM_TIMER_VAL 0x2000B404
-#define ARM_TIMER_CTL 0x2000B408
-#define ARM_TIMER_CLI 0x2000B40C
-#define ARM_TIMER_RIS 0x2000B410
-#define ARM_TIMER_MIS 0x2000B414
-#define ARM_TIMER_RLD 0x2000B418
-#define ARM_TIMER_DIV 0x2000B41C
-#define ARM_TIMER_CNT 0x2000B420
-
 #define IRQ_BASIC 0x2000B200
 #define IRQ_PEND1 0x2000B204
 #define IRQ_PEND2 0x2000B208
@@ -51,7 +41,7 @@ volatile unsigned int* gpio = (unsigned int*)GPIO_BASE;
 //-------------------------------------------------------------------------
 //void __attribute__((interrupt("IRQ"))) c_irq_handler (void) {
 void c_irq_handler (void) {
-    mmio_write(ARM_TIMER_CLI, 1);
+    arm_timer()->irq_clear = 1;
     icount++;
     if (icount & 1) {
         gpio[LED_GPCLR] = 1 << LED_GPIO_BIT;
@@ -66,9 +56,12 @@ void setup_timer() {
     uart_puts("2");
     mmio_write(IRQ_ENABLE_BASIC, 1 << 0);
     uart_puts("3");
-    mmio_write(ARM_TIMER_LOD, 0x400);
+    arm_timer()->load = 0x400;
     uart_puts("4");
-    mmio_write(ARM_TIMER_CTL, (1 << 1) | (1 << 7) | (1 << 5) | (2 << 2));
+    arm_timer()->control = ARM_TIMER_CTRL_23BIT
+                         | ARM_TIMER_CTRL_ENABLE
+                         | ARM_TIMER_CTRL_INT_ENABLE
+                         | ARM_TIMER_CTRL_PRESCALE_256;
     uart_puts("5");
     enable_irq();
     uart_puts("6");
