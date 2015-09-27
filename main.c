@@ -55,14 +55,9 @@ void c_irq_handler (void) {
     icount++;
     if (icount & 1) {
         gpio[LED_GPCLR] = 1 << LED_GPIO_BIT;
-        //uart_puts("LED OFF");
-        //uart_puts(uart_newline);
     } else {
         gpio[LED_GPSET] = 1 << LED_GPIO_BIT;
-        //uart_puts("LED ON");
-        //uart_puts(uart_newline);
     }
-    //mmio_write(ARM_TIMER_CLI,0);
 }
 
 void setup_timer() {
@@ -137,9 +132,6 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
         }
         uart_puts(uart_newline);
     }
-
-    // Wait a bit
-    for(volatile int i = 0; i < 10000000; ++i) { }
 
     uart_puts(halting);
 }
