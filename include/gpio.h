@@ -1,11 +1,9 @@
 #ifndef GPIO_H
 #define GPIO_H
 
-#ifdef RPI_2
-    #define GPIO_BASE 0x3F200000UL
-#else
-    #define GPIO_BASE 0x20200000UL
-#endif
+#include "rpi-base.h"
+
+#define GPIO_BASE (PERIPHERALS_BASE + 0x200000UL)
 
 #define GPIO_GPFSEL0    0
 #define GPIO_GPFSEL1    1
