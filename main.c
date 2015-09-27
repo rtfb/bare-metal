@@ -46,7 +46,7 @@ extern void enable_irq ( void );
 #define IRQ_DISABLE_BASIC 0x2000B224
 
 volatile unsigned int icount;
-volatile unsigned int* gpio;
+volatile unsigned int* gpio = (unsigned int*)GPIO_BASE;
 
 //-------------------------------------------------------------------------
 //void __attribute__((interrupt("IRQ"))) c_irq_handler (void) {
@@ -67,7 +67,7 @@ void c_irq_handler (void) {
 
 void setup_timer() {
     uart_puts("1");
-    mmio_write(GPIO_GPFSEL1, 1 << 18);
+    gpio[LED_GPFSEL] |= (1 << LED_GPFBIT);
     uart_puts("2");
     mmio_write(IRQ_ENABLE_BASIC, 1 << 0);
     uart_puts("3");
@@ -91,13 +91,11 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     UNUSED(atags);
 
     uart_init();
-    gpio = (unsigned int*)GPIO_BASE;
 
     // Wait a bit
     Wait(1000000);
 
     uart_puts(ready);
-    gpio[LED_GPFSEL] |= (1 << LED_GPFBIT);
 
     setup_timer();
 
