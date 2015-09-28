@@ -14,6 +14,7 @@ QEMU_ADDR=stdio
 # source files
 SOURCES_ASM := $(wildcard *.S)
 SOURCES_C   := $(wildcard *.c)
+SOURCES_C   += version.c
 
 # object files
 OBJ_FILES   := $(patsubst %.S,%.o,$(SOURCES_ASM))
@@ -61,6 +62,9 @@ $(BUILDDIR)/kernel.img: $(BUILDDIR)/kernel.elf
 
 $(BUILDDIR)/kernel.list: $(BUILDDIR)/kernel.elf
 	$(ARMGNU)-objdump -d $(BUILDDIR)/kernel.elf > $(BUILDDIR)/kernel.list
+
+version.c:
+	echo "char const* version = \"`git rev-parse --short HEAD`\";" > $@
 
 clean:
 	$(RM) -r $(BUILDDIR)

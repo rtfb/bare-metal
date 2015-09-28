@@ -11,6 +11,7 @@
 #include "led.h"
 #include "arm-timer.h"
 #include "irq.h"
+#include "version.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -106,6 +107,9 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
                 uint32_t func_len = ((uint32_t) str_parse_int) - ((uint32_t) str_len);
                 mem_cpy((uint32_t)str_len, 0x30000, func_len);
                 uart_puts(str_int_to_str(CALL_1(0x30000, "xyz"), tmp, tmplen));
+            } else if (str_startswith(buff, "version")) {
+                uart_puts(version);
+                uart_puts("\r\n");
             } else {
                 int strlen = str_len(buff) - 1;
                 int j = 0;
