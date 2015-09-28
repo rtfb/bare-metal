@@ -11,15 +11,13 @@ def encode_file(cmd):
 
 
 def main():
-    conn = serial.Serial(port='/dev/ttyUSB0', baudrate=115200)
-    conn.close()
-    conn.open()
-    data = conn.read(7)
-    print(data)
+    device = '/dev/ttyUSB0'
+    print('Connecting to %s...' % device)
+    conn = serial.Serial(port=device, baudrate=115200)
+    print('OK')
     cmd = ''
     while True:
         cmd = raw_input('> ')
-        #print('(%s) %d' % (cmd, len(cmd)))
         if cmd == 'quit':
             break
         elif cmd.startswith('file '):
