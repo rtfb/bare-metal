@@ -1,6 +1,6 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-const char* version;
+extern const char* version;
 
 #endif // VERSION_H

@@ -14,7 +14,6 @@ QEMU_ADDR=stdio
 # source files
 SOURCES_ASM := $(wildcard *.S)
 SOURCES_C   := $(wildcard *.c)
-SOURCES_C   += version.c
 
 # object files
 OBJ_FILES   := $(patsubst %.S,%.o,$(SOURCES_ASM))
@@ -54,7 +53,7 @@ all: $(BUILDDIR)/kernel.img $(BUILDDIR)/kernel.list
 
 include $(wildcard $(BUILDDIR)/*.d)
 
-$(BUILDDIR)/kernel.elf: $(OBJS) link-arm-eabi.ld
+$(BUILDDIR)/kernel.elf: version.c $(OBJS) link-arm-eabi.ld
 	$(ARMGNU)-ld $(OBJS) -Tlink-arm-eabi.ld -o $@
 
 $(BUILDDIR)/kernel.img: $(BUILDDIR)/kernel.elf
