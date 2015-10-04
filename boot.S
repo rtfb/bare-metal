@@ -97,6 +97,24 @@ reset_handler:
     //mov     sp, #(256 * (1024 * 1024)) - 4
     //mov     sp, #(512 * (1024 * 1024)) - 4
 
+    // Clear out bss.
+    ldr r4, =_bss_start
+    ldr r9, =_bss_end
+    mov r5, #0
+    mov r6, #0
+    mov r7, #0
+    mov r8, #0
+    b       2f
+
+1:
+    // store multiple at r4.
+    stmia   r4!, {r5-r8}
+
+    // If we are still below bss_end, loop.
+2:
+    cmp r4, r9
+    blo 1b
+
     // The c-startup function which we never return from. This function will
     // initialise the ro data section (most things that have the const
     // declaration) and initialise the bss section variables to 0 (generally
