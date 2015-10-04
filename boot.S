@@ -8,6 +8,9 @@
 // Make Start global.
 .globl Start
 Start:
+    b reset_handler
+
+irq_vectors:
     ldr pc, reset_addr
     ldr pc, undefined_addr
     ldr pc, swi_addr
@@ -69,7 +72,7 @@ reset_handler:
 
     // Install interrupt vectors. Copy 16 words from 0x8000, where they are
     // stored in our binary, to 0x0000 where ARM calls them
-    mov     r0, #0x8000
+    ldr     r0, =irq_vectors
     mov     r1, #0x0000
     ldmia   r0!, {r2-r9}
     stmia   r1!, {r2-r9}
@@ -120,16 +123,3 @@ reset_handler:
     // declaration) and initialise the bss section variables to 0 (generally
     // known as automatics). It'll then call main, which should never return.
     bl      kernel_main
-
-.globl enable_irq
-enable_irq:
-    mrs r0,cpsr
-    bic r0,r0,#0x80
-    msr cpsr_c,r0
-    bx lr
-
-irq_handler:
-    push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
-    bl c_irq_handler
-    pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
-    subs pc,lr,#4
