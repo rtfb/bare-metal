@@ -45,20 +45,14 @@ void c_irq_handler (void) {
 }
 
 void setup_timer() {
-    uart_puts("1");
     gpio[LED_GPFSEL] |= (1 << LED_GPFBIT);
-    uart_puts("2");
     irq_controller()->enable_basic_irqs = IRQ_BASIC_ARM_TIMER;
-    uart_puts("3");
     arm_timer()->load = 0x400;
-    uart_puts("4");
     arm_timer()->control = ARM_TIMER_CTRL_23BIT
                          | ARM_TIMER_CTRL_ENABLE
                          | ARM_TIMER_CTRL_INT_ENABLE
                          | ARM_TIMER_CTRL_PRESCALE_256;
-    uart_puts("5");
     enable_irq();
-    uart_puts("6");
 }
 
 // kernel main function, it all begins here
