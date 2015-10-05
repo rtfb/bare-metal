@@ -29,39 +29,6 @@ unused_addr:     .word reset_handler
 irq_addr:        .word irq_handler
 fiq_addr:        .word reset_handler
 
-/*
-reset_handler:
-    mov r0,#0x8000
-    mov r1,#0x0000
-    ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}
-    stmia r1!,{r2,r3,r4,r5,r6,r7,r8,r9}
-    ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}
-    stmia r1!,{r2,r3,r4,r5,r6,r7,r8,r9}
-
-
-    ;@ (PSR_IRQ_MODE|PSR_FIQ_DIS|PSR_IRQ_DIS)
-    mov r0,#0xD2
-    msr cpsr_c,r0
-    mov sp,#0x8000
-
-    ;@ (PSR_FIQ_MODE|PSR_FIQ_DIS|PSR_IRQ_DIS)
-    mov r0,#0xD1
-    msr cpsr_c,r0
-    mov sp,#0x4000
-
-    ;@ (PSR_SVC_MODE|PSR_FIQ_DIS|PSR_IRQ_DIS)
-    mov r0,#0xD3
-    msr cpsr_c,r0
-    mov sp,#0x8000000
-
-    ;@ SVC MODE, IRQ ENABLED, FIQ DIS
-    ;@mov r0,#0x53
-    ;@msr cpsr_c, r0
-
-    ;@bl notmain
-    bl kernel_main
-*/
-
 reset_handler:
     // We enter execution in supervisor mode. For more information on
     // processor modes see ARM Section A2.2 (Processor Modes)
