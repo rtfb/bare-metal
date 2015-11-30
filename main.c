@@ -93,6 +93,8 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
                 BRANCHTO(0x30000);
             } else if (str_startswith(buff, "m ")) {
                 inspect_memory(buff+2);
+            } else if (str_startswith(buff, "r ")) {
+                inspect_reg(buff+2);
             } else if (str_startswith(buff, "icky")) {
                 uart_puts(yoo);
             } else if (str_startswith(buff, "freloc")) {

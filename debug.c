@@ -2,6 +2,7 @@
 
 #include "uart.h"
 #include "common.h"
+#include "asmcall.h"
 
 #define MIN(x,y) (((x) < (y)) ? (x) : (y))
 
@@ -118,4 +119,53 @@ void inspect_memory(char const* straddr) {
         ptr += 16;
         num -= 16;
     }
+}
+
+uint32_t get_reg(char const* regname) {
+    if (regname[0] == 'p' && regname[1] == 'c') {
+        return dumpreg_pc();
+    }
+    if (regname[0] == 's' && regname[1] == 'p') {
+        return dumpreg_sp();
+    }
+    if (regname[0] == 'l' && regname[1] == 'r') {
+        return dumpreg_lr();
+    }
+    if (regname[0] == 'r') {
+        switch (regname[1]) {
+            case '1':
+                if (regname[2] == '0') {
+                    return dumpreg_r10();
+                }
+                if (regname[2] == '1') {
+                    return dumpreg_r11();
+                }
+                if (regname[2] == '2') {
+                    return dumpreg_r12();
+                }
+            case '0':
+                return dumpreg_r0();
+            case '2':
+                return dumpreg_r2();
+            case '3':
+                return dumpreg_r3();
+            case '4':
+                return dumpreg_r4();
+            case '5':
+                return dumpreg_r5();
+            case '6':
+                return dumpreg_r6();
+            case '7':
+                return dumpreg_r7();
+            case '8':
+                return dumpreg_r8();
+            case '9':
+                return dumpreg_r9();
+        }
+    }
+    return 0;
+}
+
+void inspect_reg(char const* regname) {
+    puthexint(get_reg(regname));
 }
