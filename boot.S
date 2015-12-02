@@ -29,6 +29,14 @@ unused_addr:     .word reset_handler
 irq_addr:        .word irq_handler
 fiq_addr:        .word reset_handler
 
+ram_size:        .word 0x8000000 // TODO: detect that, but for now pretend it's
+                                 // 128megs
+irq_stack_size:  .word 0x100000  // 1meg for each stack...
+fiq_stack_size:  .word 0x100000
+user_stack_size: .word 0x100000
+svr_stack_size:  .word 0x100000
+sys_stack_size:  .word 0x100000
+
 reset_handler:
     // We enter execution in supervisor mode. For more information on
     // processor modes see ARM Section A2.2 (Processor Modes)
@@ -50,22 +58,49 @@ reset_handler:
     // stack pointer which differs to the application stack pointer:
     mov r0, #(CPSR_MODE_IRQ | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
     msr cpsr_c, r0
-    mov sp, #0x8000
+    ldr r1, ram_size    // Top of memory
+    mov sp, r1          // Set IRQ stack bottom to the very end of RAM (stack grows downward)
 
-    // Switch back to supervisor mode (our application mode) and
-    // set the stack pointer towards the end of RAM. Remember that the
-    // stack works its way down memory, our heap will work it's way
-    // up memory toward the application stack.
+    // Subtract IRQ stack size
+    ldr r2, irq_stack_size
+    sbc r1, r1, r2
+
+    // Similarly, set up FIQ stack:
+    mov r0, #(CPSR_MODE_FIQ | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
+    msr cpsr_c, r0
+    mov sp, r1          // Set FIQ stack bottom below IRQ stack (stack grows downward)
+
+    // Subtract FIQ stack size
+    ldr r2, fiq_stack_size
+    sbc r1, r1, r2
+
+    // Similarly, set up stack for supervisor mode:
     mov r0, #(CPSR_MODE_SVR | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
     msr cpsr_c, r0
+    mov sp, r1          // Set SVR stack bottom below FIQ stack (stack grows downward)
 
-    // Set the stack pointer at the end of RAM.
-    // Keep it within the limits and also keep it aligned to a 32-bit
-    // boundary!
-    mov     sp, #0x4000
-    // mov     sp, #(128 * (1024 * 1024)) - 4
-    //mov     sp, #(256 * (1024 * 1024)) - 4
-    //mov     sp, #(512 * (1024 * 1024)) - 4
+    // Subtract SVR stack size
+    ldr r2, svr_stack_size
+    sbc r1, r1, r2
+
+    // Finally, set the stack for ordinary system mode operation:
+    mov r0, #(CPSR_MODE_SYSTEM | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
+    msr cpsr_c, r0
+    mov sp, r1          // Set SYS stack bottom below SVR stack (stack grows downward)
+
+    // Subtract SYS stack size
+    ldr r2, sys_stack_size
+    sbc r1, r1, r2
+
+    // Remember that the stack works its way down memory, our heap will work
+    // it's way up memory toward the application stack. r1 now contains end of
+    // RAM, minus all the stacks. Heap can grow from bss_end to r1. Leave core
+    // in SYS mode.
+    ldr r3, =end_of_heap
+    str r1, [r3]
+    ldr r9, =_bss_end
+    ldr r3, =start_of_heap
+    str r9, [r3]
 
     // Clear out bss.
     ldr r4, =_bss_start

@@ -8,13 +8,14 @@
 // different.
 //
 // See ARM section A2.2 (Processor Modes)
-#define CPSR_MODE_USER         0x10
+#define CPSR_MODE_USER         0x10 // normal userland operation
 #define CPSR_MODE_FIQ          0x11
 #define CPSR_MODE_IRQ          0x12
-#define CPSR_MODE_SVR          0x13
+#define CPSR_MODE_SVR          0x13 // for handling SWIs
 #define CPSR_MODE_ABORT        0x17
 #define CPSR_MODE_UNDEFINED    0x1B
-#define CPSR_MODE_SYSTEM       0x1F
+#define CPSR_MODE_SYSTEM       0x1F // normal OS operation
+#define CPSR_MODE_MASK         0x1F
 
 // See ARM section A2.5 (Program status registers)
 #define CPSR_IRQ_INHIBIT       0x80
