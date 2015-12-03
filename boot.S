@@ -56,7 +56,7 @@ reset_handler:
 
     // We're going to use interrupt mode, so setup the interrupt mode
     // stack pointer which differs to the application stack pointer:
-    mov r0, #(CPSR_MODE_IRQ | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
+    mov r0, #(CPSR_MODE_IRQ | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT)
     msr cpsr_c, r0
     ldr r1, ram_size    // Top of memory
     mov sp, r1          // Set IRQ stack bottom to the very end of RAM (stack grows downward)
@@ -66,7 +66,7 @@ reset_handler:
     sbc r1, r1, r2
 
     // Similarly, set up FIQ stack:
-    mov r0, #(CPSR_MODE_FIQ | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
+    mov r0, #(CPSR_MODE_FIQ | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT)
     msr cpsr_c, r0
     mov sp, r1          // Set FIQ stack bottom below IRQ stack (stack grows downward)
 
@@ -75,7 +75,7 @@ reset_handler:
     sbc r1, r1, r2
 
     // Similarly, set up stack for supervisor mode:
-    mov r0, #(CPSR_MODE_SVR | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
+    mov r0, #(CPSR_MODE_SVR | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT)
     msr cpsr_c, r0
     mov sp, r1          // Set SVR stack bottom below FIQ stack (stack grows downward)
 
@@ -84,7 +84,7 @@ reset_handler:
     sbc r1, r1, r2
 
     // Finally, set the stack for ordinary system mode operation:
-    mov r0, #(CPSR_MODE_SYSTEM | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT )
+    mov r0, #(CPSR_MODE_SYSTEM | CPSR_IRQ_INHIBIT | CPSR_FIQ_INHIBIT)
     msr cpsr_c, r0
     mov sp, r1          // Set SYS stack bottom below SVR stack (stack grows downward)
 
@@ -93,9 +93,9 @@ reset_handler:
     sbc r1, r1, r2
 
     // Remember that the stack works its way down memory, our heap will work
-    // it's way up memory toward the application stack. r1 now contains end of
-    // RAM, minus all the stacks. Heap can grow from bss_end to r1. Leave core
-    // in SYS mode.
+    // it's way up memory toward the system stack. r1 now contains end of RAM,
+    // minus all the stacks. Heap can grow from bss_end to r1. Leave core in
+    // SYS mode.
     ldr r3, =end_of_heap
     str r1, [r3]
     ldr r9, =_bss_end
