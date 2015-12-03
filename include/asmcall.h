@@ -4,6 +4,7 @@
 extern void BRANCHTO(unsigned int);
 extern uint32_t CALL_1(uint32_t addr, char const* param);
 extern void bootstrap_decoded_binary();
+extern void enable_irq();
 extern uint32_t dumpreg_r0();
 extern uint32_t dumpreg_r1();
 extern uint32_t dumpreg_r2();

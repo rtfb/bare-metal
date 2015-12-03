@@ -29,8 +29,6 @@ void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
     }
 }
 
-extern void enable_irq ( void );
-
 volatile unsigned int icount;
 volatile unsigned int* gpio = (unsigned int*)GPIO_BASE;
 
