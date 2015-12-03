@@ -12,12 +12,11 @@
 #include "arm-timer.h"
 #include "irq.h"
 #include "version.h"
+#include "malloc.h"
 
 const char halting[] = "\r\n*** system halting ***";
 const char ready[] = "ready\r\n";
 const char yoo[] = "yoo!";
-uint32_t end_of_heap = 0;
-uint32_t start_of_heap = 0;
 
 void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
     uint8_t *p_from = (uint8_t*) from;
@@ -70,12 +69,7 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     Wait(1000000);
 
     uart_puts(ready);
-    uart_puts("Beginning of heap: 0x");
-    puthexint(start_of_heap);
-    uart_puts(uart_newline);
-    uart_puts("End of heap: 0x");
-    puthexint(end_of_heap);
-    uart_puts(uart_newline);
+    print_heap_range();
 
     setup_timer();
 
