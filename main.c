@@ -13,8 +13,6 @@
 #include "irq.h"
 #include "version.h"
 
-#define UNUSED(x) (void)(x)
-
 const char halting[] = "\r\n*** system halting ***";
 const char ready[] = "ready\r\n";
 const char yoo[] = "yoo!";
