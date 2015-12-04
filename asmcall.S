@@ -105,3 +105,7 @@ FUNC dumpreg_lr
 FUNC dumpreg_pc
     mov r0, pc
     bx lr
+
+FUNC dumpreg_cpsr
+    mrs r0, cpsr
+    bx lr

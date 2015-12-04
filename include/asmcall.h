@@ -21,5 +21,6 @@ extern uint32_t dumpreg_r12();
 extern uint32_t dumpreg_sp();
 extern uint32_t dumpreg_lr();
 extern uint32_t dumpreg_pc();
+extern uint32_t dumpreg_cpsr();
 
 #endif

@@ -122,6 +122,9 @@ void inspect_memory(char const* straddr) {
 }
 
 uint32_t get_reg(char const* regname) {
+    if (regname[0] == 'c' && regname[1] == 'p' && regname[2] == 's' && regname[3] == 'r') {
+        return dumpreg_cpsr();
+    }
     if (regname[0] == 'p' && regname[1] == 'c') {
         return dumpreg_pc();
     }
