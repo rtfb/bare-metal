@@ -59,8 +59,6 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     char *decodebuff = (char*) 0x20000;
     uint32_t decodebufflen = 0x30000 - 0x20000;
     int status = 0;
-    UNUSED(r0);
-    UNUSED(r1);
     UNUSED(atags);
 
     uart_init();
@@ -69,6 +67,7 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     Wait(1000000);
 
     uart_puts(ready);
+    init_heap(r0, r1);
     print_heap_range();
 
     setup_timer();

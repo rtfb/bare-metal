@@ -96,11 +96,9 @@ reset_handler:
     // it's way up memory toward the system stack. r1 now contains end of RAM,
     // minus all the stacks. Heap can grow from bss_end to r1. Leave core in
     // SYS mode.
-    ldr r3, =end_of_heap
-    str r1, [r3]
-    ldr r9, =_bss_end
-    ldr r3, =start_of_heap
-    str r9, [r3]
+    ldr r0, =_bss_end
+    // r0 == start_of_heap
+    // r1 == end_of_heap
 
     // Clear out bss.
     ldr r4, =_bss_start
