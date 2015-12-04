@@ -24,10 +24,10 @@ void kfree(void *ptr) {
 }
 
 void print_heap_range() {
-    uart_puts("Beginning of heap: 0x");
+    uart_puts("Beginning of heap: ");
     puthexint(start_of_heap);
     uart_puts(uart_newline);
-    uart_puts("End of heap: 0x");
+    uart_puts("End of heap: ");
     puthexint(end_of_heap);
     uart_puts(uart_newline);
 }

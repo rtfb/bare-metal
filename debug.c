@@ -59,6 +59,7 @@ char* hexbyte(uint8_t b, char *buff) {
 
 void puthexint(uint32_t i) {
     char buff[32];
+    uart_puts("0x");
     uart_puts(hexbyte(i >> 24, buff));
     uart_puts(hexbyte((i & 0x00ff0000) >> 16, buff));
     uart_puts(hexbyte((i & 0x0000ff00) >> 8, buff));
