@@ -1,4 +1,5 @@
 #include <asm.h>
+#include <arm.h>
 
 /*
  * A simple unconditional branch to a specified address, presumably, to a newly
@@ -32,9 +33,9 @@ FUNC bootstrap_decoded_binary
     bx  r0
 
 FUNC enable_irq
-    mrs r0,cpsr
-    bic r0,r0,#0x80
-    msr cpsr_c,r0
+    mrs r0, cpsr
+    bic r0, r0, #CPSR_IRQ_INHIBIT
+    msr cpsr_c, r0
     bx lr
 
 FUNC irq_handler
