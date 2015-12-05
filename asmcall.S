@@ -32,6 +32,18 @@ FUNC bootstrap_decoded_binary
     mov r0, #0x8000
     bx  r0
 
+// Take a process_t* in r0 and transfer control to it
+FUNC switch_to_user_process
+    // switch to userland, inhibit FIQ, but allow IRQ:
+    mov r1, #(CPSR_MODE_USER | CPSR_FIQ_INHIBIT)
+    msr cpsr_c, r1
+    ldr sp, [r0, #8]
+
+    // now here's a trick: process structure has a stack prepopulated so we can
+    // bx lr here and we'll end up in the processes' code
+    pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    bx lr
+
 FUNC enable_irq
     mrs r0, cpsr
     bic r0, r0, #CPSR_IRQ_INHIBIT

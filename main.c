@@ -13,6 +13,7 @@
 #include "irq.h"
 #include "version.h"
 #include "malloc.h"
+#include "process.h"
 
 const char halting[] = "\r\n*** system halting ***";
 const char ready[] = "ready\r\n";
@@ -52,6 +53,12 @@ void setup_timer() {
     enable_irq();
 }
 
+void fn0(void *env) {
+    UNUSED(env);
+    uart_puts("wow :-)\n");
+    while (1);
+}
+
 // kernel main function, it all begins here
 void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     char *buff = (char*) 0x10000;
@@ -71,6 +78,11 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     print_heap_range();
 
     setup_timer();
+    process_t *pr0 = new_process(fn0);
+    uart_puts("pr0 = ");
+    puthexint((uint32_t)pr0);
+    uart_puts(uart_newline);
+    switch_to_user_process(pr0);
 
     while (1) {
         status = uart_getln(buff, len);
