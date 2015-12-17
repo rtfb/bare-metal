@@ -56,7 +56,7 @@ void setup_timer() {
 void fn0(void *env) {
     UNUSED(env);
     uart_puts("wow :-)\n");
-    while (1);
+    sys_exit(0);
 }
 
 // kernel main function, it all begins here
@@ -82,7 +82,6 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
     uart_puts("pr0 = ");
     puthexint((uint32_t)pr0);
     uart_puts(uart_newline);
-    switch_to_user_process(pr0);
 
     while (1) {
         status = uart_getln(buff, len);
@@ -106,6 +105,8 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
                 inspect_reg(buff+2);
             } else if (str_startswith(buff, "icky")) {
                 uart_puts(yoo);
+            } else if (str_startswith(buff, "usr0")) {
+                switch_to_user_process(pr0);
             } else if (str_startswith(buff, "freloc")) {
                 char tmp[32];
                 uint32_t tmplen = ARR_LEN(tmp);

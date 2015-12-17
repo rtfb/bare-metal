@@ -1,6 +1,8 @@
 #include <asm.h>
 #include <arm.h>
 
+sys_stack_ptr:   .word 0x0
+
 /*
  * A simple unconditional branch to a specified address, presumably, to a newly
  * uploaded binary.
@@ -34,15 +36,26 @@ FUNC bootstrap_decoded_binary
 
 // Take a process_t* in r0 and transfer control to it
 FUNC switch_to_user_process
+    // save state of system process in system stack
+    push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
     // switch to userland, inhibit FIQ, but allow IRQ:
     mov r1, #(CPSR_MODE_USER | CPSR_FIQ_INHIBIT)
     msr cpsr_c, r1
+
+    // store system's sp for later
+    ldr r2, =sys_stack_ptr
+    str sp, [r2]
+
+    // set userlad sp from the process struct
     ldr sp, [r0, #8]
 
     // now here's a trick: process structure has a stack prepopulated so we can
     // bx lr here and we'll end up in the processes' code
     pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
     bx lr
+
+FUNC sys_exit
+    swi #13
 
 FUNC enable_irq
     mrs r0, cpsr
@@ -55,6 +68,19 @@ FUNC irq_handler
     bl c_irq_handler
     pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
     subs pc,lr,#4
+
+FUNC swi_handler
+    // switch to systemland, inhibit FIQ, but allow IRQ:
+    mov r1, #(CPSR_MODE_SYSTEM | CPSR_FIQ_INHIBIT)
+    msr cpsr_c, r1
+
+    // restore system's sp
+    ldr r0, =sys_stack_ptr
+    ldr sp, [r0]
+
+    // now when the stack is back, restore previously saved system state
+    pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    bx lr
 
 FUNC dumpreg_r0
     bx lr

@@ -22,7 +22,7 @@ irq_vectors:
 
 reset_addr:      .word reset_handler
 undefined_addr:  .word reset_handler
-swi_addr:        .word reset_handler
+swi_addr:        .word swi_handler
 prefetch_addr:   .word reset_handler
 data_abort_addr: .word reset_handler
 unused_addr:     .word reset_handler

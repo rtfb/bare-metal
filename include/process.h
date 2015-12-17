@@ -15,5 +15,6 @@ typedef struct process_s {
 
 process_t* new_process(process_entry_point_t func);
 extern void switch_to_user_process(process_t *p); // implemented in asmcall.S
+extern void sys_exit(uint32_t status); // implemented in asmcall.S
 
 #endif // PROCESS_H
