@@ -64,6 +64,10 @@ FUNC enable_irq
     bx lr
 
 FUNC irq_handler
+    // Read processor state so we could later determine what mode we were in
+    // when the interrupt occurred. r0 will be passed as param to irq_dispatch()
+    mrs r0, cpsr
+
     sub lr, lr, #4
     srsdb #CPSR_MODE_SYSTEM!
     cpsid if, #CPSR_MODE_SYSTEM
