@@ -3,14 +3,17 @@
 
 static uint32_t next_pid = 1;
 
+uint32_t get_next_pid() {
+    return next_pid++;
+}
+
 process_t* new_process(process_entry_point_t func) {
     uint32_t user_stack_size = 0x100000; // XXX: this constant is already defined in boot.S, reuse
     process_t *p = kmalloc(sizeof(process_t));
     void *stack = kmalloc(user_stack_size);
     uint32_t *sp = (uint32_t*)(stack) + user_stack_size/4;
     p->stack_bottom = sp;
-    p->pid = next_pid;
-    ++next_pid;
+    p->pid = get_next_pid();
 
     void *env = NULL;
     //void *exit_fn = NULL;
