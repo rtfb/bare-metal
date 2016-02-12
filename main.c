@@ -18,6 +18,7 @@
 const char halting[] = "\r\n*** system halting ***";
 const char ready[] = "ready\r\n";
 const char yoo[] = "yoo!";
+process_t *pr0 = NULL;
 
 void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
     uint8_t *p_from = (uint8_t*) from;
@@ -67,30 +68,12 @@ void fn0(void *env) {
     sys_exit(0);
 }
 
-// kernel main function, it all begins here
-void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
+void interactive_kernel_loop() {
     char *buff = (char*) 0x10000;
     uint32_t len = 0x20000 - 0x10000;
     char *decodebuff = (char*) 0x20000;
     uint32_t decodebufflen = 0x30000 - 0x20000;
     int status = 0;
-    UNUSED(atags);
-
-    uart_init();
-
-    // Wait a bit
-    Wait(1000000);
-
-    uart_puts(ready);
-    init_heap(r0, r1);
-    print_heap_range();
-
-    setup_timer();
-    process_t *pr0 = new_process(fn0);
-    uart_puts("pr0 = ");
-    puthexint((uint32_t)pr0);
-    uart_puts(uart_newline);
-
     while (1) {
         status = uart_getln(buff, len);
         if (status == 0) {
@@ -114,7 +97,9 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
             } else if (str_startswith(buff, "icky")) {
                 uart_puts(yoo);
             } else if (str_startswith(buff, "usr0")) {
-                switch_to_user_process(pr0);
+                if (pr0) {
+                    switch_to_user_process(pr0);
+                }
             } else if (str_startswith(buff, "freloc")) {
                 char tmp[32];
                 uint32_t tmplen = ARR_LEN(tmp);
@@ -136,6 +121,29 @@ void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
         }
         uart_puts(uart_newline);
     }
+}
+
+// kernel main function, it all begins here
+void kernel_main(uint32_t r0, uint32_t r1, uint32_t atags) {
+    UNUSED(atags);
+
+    uart_init();
+
+    // Wait a bit
+    Wait(1000000);
+
+    uart_puts(ready);
+    init_heap(r0, r1);
+    print_heap_range();
+
+    pr0 = new_process(fn0);
+    uart_puts("pr0 = ");
+    puthexint((uint32_t)pr0);
+    uart_puts(uart_newline);
+
+    setup_timer();
+
+    interactive_kernel_loop();
 
     uart_puts(halting);
 }
