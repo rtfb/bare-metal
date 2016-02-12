@@ -64,10 +64,25 @@ FUNC enable_irq
     bx lr
 
 FUNC irq_handler
+    sub lr, lr, #4
+    srsdb #CPSR_MODE_SYSTEM!
+    cpsid if, #CPSR_MODE_SYSTEM
     push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    // According to the document "Procedure Call Standard for the ARM
+    // Architecture", the stack pointer is 4-byte aligned at all times, but it
+    // must be 8-byte aligned when calling an externally visible function.
+    // This is important because this code is reached from an IRQ and therefore
+    // the stack currently may only be 4-byte aligned.  If this is the case,
+    // the stack must be padded to an 8-byte boundary before calling
+    // irq_dispatch().
+    and r4, sp, #4
+    sub sp, sp, r4
     bl irq_dispatch
+    // Restore the original stack alignment (see note about 8-byte alignment
+    // above).
+    add sp, sp, r4
     pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
-    subs pc,lr,#4
+    rfeia sp!
 
 FUNC swi_handler
     // switch to systemland, inhibit FIQ, but allow IRQ:
