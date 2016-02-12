@@ -30,16 +30,24 @@ void mem_cpy(uint32_t from, uint32_t to, uint32_t len) {
 volatile unsigned int icount;
 volatile unsigned int* gpio = (unsigned int*)GPIO_BASE;
 
-//-------------------------------------------------------------------------
-//void __attribute__((interrupt("IRQ"))) c_irq_handler (void) {
-void c_irq_handler (void) {
-    arm_timer()->irq_clear = 1;
+void handle_time_tick() {
     icount++;
     if (icount & 1) {
         gpio[LED_GPCLR] = 1 << LED_GPIO_BIT;
     } else {
         gpio[LED_GPSET] = 1 << LED_GPIO_BIT;
     }
+    arm_timer()->irq_clear = 1;
+}
+
+void irq_dispatch(void) {
+    // Currently we only handle timer interrupts, ignore all others:
+    if (irq_controller()->irq_basic_pending && IRQ_BASIC_ARM_TIMER == 0) {
+        uart_puts("skipping IRQ...\n");
+        return;
+    }
+    // OK, now we know we're in timer interrupt, proceed:
+    handle_time_tick();
 }
 
 void setup_timer() {
